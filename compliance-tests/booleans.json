@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Booleans",
+    "context": {
+      "value": {
+        "T": true,
+        "F": false,
+        "One": 1,
+        "Two": 2
+      }
+    },
+    "checks": [
+      { "expr": "T .AND. F", "expected": false },
+      { "expr": "T .AND. T", "expected": true },
+      { "expr": "T .OR. F", "expected": true },
+      { "expr": "F .OR. F", "expected": false },
+
+      { "expr": "One = 1 .AND. Two = 1", "expected": false },
+      { "expr": "One = 1 .AND. Two = 2", "expected": true },
+      { "expr": "One = 1 .OR. Two = 1", "expected": true },
+      { "expr": "Two = 1 .OR. Two = 1", "expected": false },
+
+      { "expr": "T .OR. F .AND. F", "expected": true },
+      { "expr": "(T .OR. F) .AND. F", "expected": false },
+      { "expr": "T .OR. (F .AND. F)", "expected": true },
+
+      { "expr": ".NOT. T", "expected": false },
+      { "expr": ".NOT. F", "expected": true },
+      { "expr": ".NOT. .NOT. T", "expected": true },
+      { "expr": ".NOT. .NOT. (T .OR. F)", "expected": true },
+      { "expr": ".NOT..NOT.T", "expected": true },
+      { "expr": ".NOT..NOT.(T.OR.F)", "expected": true },
+
+      { "expr": ".NOT. F .AND. T", "expected": true },
+      { "expr": "(.NOT. F) .AND. T", "expected": true },
+      { "expr": ".NOT. (F .AND. T)", "expected": true },
+
+      { "expr": ".NOT. T .OR. F", "expected": false },
+      { "expr": "(.NOT. T) .OR. F", "expected": false },
+      { "expr": ".NOT. (T .OR. F)", "expected": false }
+    ]
+  },
+  {
+    "name": "Early returns",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": ".TRUE. .OR. 1 / 0", "expected": true },
+      { "expr": ".FALSE. .AND. 1 / 0", "expected": false },
+      {
+        "expr": "UnspecifiedField != .EMPTY. .AND. UnspecifiedField > 0",
+        "expected": false
+      },
+      {
+        "expr": "UnspecifiedField = .EMPTY. .OR. UnspecifiedField > 0",
+        "expected": true
+      }
+    ]
+  },
+  {
+    "name": "IIF",
+    "context": {
+      "value": {
+        "Two": 2
+      }
+    },
+    "checks": [
+      { "expr": "IIF(Two > 1, 1+2, 1+4)", "expected": 3 },
+      { "expr": "IIF(Two < 1, 1+2, 1+4)", "expected": 5 },
+      { "expr": "IIF(Two > 1, 1, 1/0)", "expected": 1 },
+      {
+        "expr": "IIF(UnspecifiedField = .EMPTY., 1, UnspecifiedField)",
+        "expected": 1
+      },
+      { "expr": "IIF(Two = .EMPTY., 1, Two)", "expected": 2 }
+    ]
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Literals",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": ".TRUE.", "expected": true },
+      { "expr": ".FALSE.", "expected": false },
+      { "expr": ".EMPTY.", "expected": null },
+      { "expr": "\"abc\"", "expected": "abc" },
+      { "expr": "'abc'", "expected": "abc" },
+      { "expr": "\"\"", "expected": "" },
+      { "expr": "''", "expected": "" },
+      { "expr": "100", "expected": 100 },
+      { "expr": "100.0", "expected": 100.0 },
+      { "expr": "3.14159", "expected": 3.14159 },
+      { "expr": "()", "expected": [] },
+      { "expr": "(1)", "expected": 1 },
+      { "expr": "LIST(1)", "expected": [1] },
+      { "expr": "(1, 2)", "expected": [1, 2] }
+    ]
+  }
+]

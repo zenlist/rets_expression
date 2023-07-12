@@ -1,0 +1,31 @@
+[
+  {
+    "name": "Now",
+    "context": {
+      "value": {
+        "Number": 1,
+        "Bool": true,
+        "String": "Hey"
+      },
+      "now": "2023-04-21T12:01:02.345Z",
+      "timezone": "America/Chicago"
+    },
+    "checks": [
+      { "expr": ".NOW.", "expected": "2023-04-21T12:01:02.345Z" },
+      { "expr": ".TODAY.", "expected": "2023-04-21" }
+    ]
+  },
+  {
+    "name": "Different today based on TZ",
+    "context": {
+      "value": {
+        "Number": 1,
+        "Bool": true,
+        "String": "Hey"
+      },
+      "now": "2023-04-21T01:02:03.456Z",
+      "timezone": "America/Chicago"
+    },
+    "checks": [{ "expr": ".TODAY.", "expected": "2023-04-20" }]
+  }
+]

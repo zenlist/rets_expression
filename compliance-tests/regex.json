@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Regex",
+    "context": {
+      "value": {
+        "String": "This is the test 123456"
+      }
+    },
+    "checks": [
+      { "expr": "MATCH(String, 'is the')", "expected": true },
+      { "expr": "MATCH(String, 'not in there')", "expected": false },
+      { "expr": "MATCH(String, 'is\\\\s+the')", "expected": true },
+      { "expr": "MATCH(String, '^This')", "expected": true },
+      { "expr": "MATCH(String, '^is')", "expected": false },
+      { "expr": "MATCH(String, 'This is (the test|prod)')", "expected": true },
+      { "expr": "MATCH(String, '[0-9]{3,}$')", "expected": true },
+      { "expr": "MATCH(NotExists, 'anything')", "expected": false }
+    ]
+  }
+]

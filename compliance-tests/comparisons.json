@@ -1,0 +1,158 @@
+[
+  {
+    "name": "Numeric comparisons",
+    "context": {
+      "value": {
+        "One": 1,
+        "Two": 2
+      }
+    },
+    "checks": [
+      { "expr": "One = Two", "expected": false },
+      { "expr": "One != Two", "expected": true },
+      { "expr": "One > Two", "expected": false },
+      { "expr": "One >= Two", "expected": false },
+      { "expr": "One < Two", "expected": true },
+      { "expr": "One <= Two", "expected": true },
+      { "expr": "Two = One", "expected": false },
+      { "expr": "Two != One", "expected": true },
+      { "expr": "Two > One", "expected": true },
+      { "expr": "Two >= One", "expected": true },
+      { "expr": "Two < One", "expected": false },
+      { "expr": "Two <= One", "expected": false }
+    ]
+  },
+  {
+    "name": "String comparisons",
+    "context": {
+      "value": {
+        "One": "One",
+        "Two": "Two"
+      }
+    },
+    "checks": [
+      { "expr": "One = Two", "expected": false },
+      { "expr": "One != Two", "expected": true },
+      { "expr": "One > Two", "expected": false },
+      { "expr": "One >= Two", "expected": false },
+      { "expr": "One < Two", "expected": true },
+      { "expr": "One <= Two", "expected": true },
+      { "expr": "Two = One", "expected": false },
+      { "expr": "Two != One", "expected": true },
+      { "expr": "Two > One", "expected": true },
+      { "expr": "Two >= One", "expected": true },
+      { "expr": "Two < One", "expected": false },
+      { "expr": "Two <= One", "expected": false }
+    ]
+  },
+  {
+    "name": "Boolean comparisons",
+    "context": {
+      "value": {
+        "True": true,
+        "False": false
+      }
+    },
+    "checks": [
+      { "expr": "False = True", "expected": false },
+      { "expr": "False != True", "expected": true },
+      { "expr": "False > True", "expected": false },
+      { "expr": "False >= True", "expected": false },
+      { "expr": "False < True", "expected": true },
+      { "expr": "False <= True", "expected": true },
+      { "expr": "True = False", "expected": false },
+      { "expr": "True != False", "expected": true },
+      { "expr": "True > False", "expected": true },
+      { "expr": "True >= False", "expected": true },
+      { "expr": "True < False", "expected": false },
+      { "expr": "True <= False", "expected": false }
+    ]
+  },
+  {
+    "name": "Comparisons against null",
+    "context": {
+      "value": {
+        "Null": null,
+        "Number": 1,
+        "String": "Hey",
+        "True": true,
+        "False": false
+      }
+    },
+    "checks": [
+      { "expr": "Null = .EMPTY.", "expected": true },
+      { "expr": "Number = .EMPTY.", "expected": false },
+      { "expr": "String = .EMPTY.", "expected": false },
+      { "expr": "True = .EMPTY.", "expected": false },
+      { "expr": "False = .EMPTY.", "expected": false },
+      { "expr": "UnspecifiedField = .EMPTY.", "expected": true },
+
+      { "expr": "Null != .EMPTY.", "expected": false },
+      { "expr": "Number != .EMPTY.", "expected": true },
+      { "expr": "String != .EMPTY.", "expected": true },
+      { "expr": "True != .EMPTY.", "expected": true },
+      { "expr": "False != .EMPTY.", "expected": true },
+      { "expr": "UnspecifiedField != .EMPTY.", "expected": false },
+
+      { "expr": "Null > .EMPTY.", "expected": false },
+      { "expr": "Number > .EMPTY.", "expected": true },
+      { "expr": "String > .EMPTY.", "expected": true },
+      { "expr": "True > .EMPTY.", "expected": true },
+      { "expr": "False > .EMPTY.", "expected": true },
+      { "expr": "UnspecifiedField > .EMPTY.", "expected": false },
+
+      { "expr": "Null >= .EMPTY.", "expected": true },
+      { "expr": "Number >= .EMPTY.", "expected": true },
+      { "expr": "String >= .EMPTY.", "expected": true },
+      { "expr": "True >= .EMPTY.", "expected": true },
+      { "expr": "False >= .EMPTY.", "expected": true },
+      { "expr": "UnspecifiedField >= .EMPTY.", "expected": true },
+
+      { "expr": "Null < .EMPTY.", "expected": false },
+      { "expr": "Number < .EMPTY.", "expected": false },
+      { "expr": "String < .EMPTY.", "expected": false },
+      { "expr": "True < .EMPTY.", "expected": false },
+      { "expr": "False < .EMPTY.", "expected": false },
+      { "expr": "UnspecifiedField < .EMPTY.", "expected": false },
+
+      { "expr": "Null <= .EMPTY.", "expected": true },
+      { "expr": "Number <= .EMPTY.", "expected": false },
+      { "expr": "String <= .EMPTY.", "expected": false },
+      { "expr": "True <= .EMPTY.", "expected": false },
+      { "expr": "False <= .EMPTY.", "expected": false },
+      { "expr": "UnspecifiedField <= .EMPTY.", "expected": true }
+    ]
+  },
+  {
+    "name": "Comparisons including IIF",
+    "context": {
+      "value": {
+        "ParkingTotal": 3,
+        "GarageSpaces": 2,
+        "OpenParkingSpaces": null
+      }
+    },
+    "checks": [
+      {
+        "expr": "IIF(ParkingTotal = .EMPTY., 0, ParkingTotal) = IIF(GarageSpaces = .EMPTY., 0, GarageSpaces) + IIF(OpenParkingSpaces = .EMPTY., 0, OpenParkingSpaces)",
+        "expected": false
+      },
+      {
+        "expr": "IIF(ParkingTotal = .EMPTY., 0, ParkingTotal) > IIF(GarageSpaces = .EMPTY., 0, GarageSpaces) + IIF(OpenParkingSpaces = .EMPTY., 0, OpenParkingSpaces)",
+        "expected": true
+      },
+      {
+        "expr": "IIF(ParkingTotal = .EMPTY., 0, ParkingTotal) >= IIF(GarageSpaces = .EMPTY., 0, GarageSpaces) + IIF(OpenParkingSpaces = .EMPTY., 0, OpenParkingSpaces)",
+        "expected": true
+      },
+      {
+        "expr": "IIF(ParkingTotal = .EMPTY., 0, ParkingTotal) < IIF(GarageSpaces = .EMPTY., 0, GarageSpaces) + IIF(OpenParkingSpaces = .EMPTY., 0, OpenParkingSpaces)",
+        "expected": false
+      },
+      {
+        "expr": "IIF(ParkingTotal = .EMPTY., 0, ParkingTotal) <= IIF(GarageSpaces = .EMPTY., 0, GarageSpaces) + IIF(OpenParkingSpaces = .EMPTY., 0, OpenParkingSpaces)",
+        "expected": false
+      }
+    ]
+  }
+]

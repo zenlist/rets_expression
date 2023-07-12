@@ -1,0 +1,147 @@
+[
+  {
+    "name": "Set construction",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "SET()", "expected": [] },
+      { "expr": "SET('1')", "expected": ["1"] },
+      { "expr": "SET('1', '2')", "expected": ["1", "2"] },
+      { "expr": "SET('2', '1')", "expected": ["2", "1"] },
+      { "expr": "SET('1', '2', '1')", "expected": ["1", "2"] },
+      {
+        "expr": "SET('a' || 'b' || 'c', 4 + 5, 'd' || 'e', 2 + 7)",
+        "expected": ["abc", 9, "de"]
+      }
+    ]
+  },
+  {
+    "name": "List construction",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "LIST()", "expected": [] },
+      { "expr": "LIST('1')", "expected": ["1"] },
+      { "expr": "LIST('1', '2')", "expected": ["1", "2"] },
+      { "expr": "LIST('2', '1')", "expected": ["2", "1"] },
+      { "expr": "LIST('1', '2', '1')", "expected": ["1", "2", "1"] },
+      {
+        "expr": "LIST('a' || 'b' || 'c', 4 + 5, 'd' || 'e', 2 + 7)",
+        "expected": ["abc", 9, "de", 9]
+      }
+    ]
+  },
+  {
+    "name": "List literal construction",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "()", "expected": [] },
+      { "expr": "('1')", "expected": "1" },
+      { "expr": "('1', '2')", "expected": ["1", "2"] },
+      { "expr": "('2', '1')", "expected": ["2", "1"] },
+      { "expr": "('1', '2', '1')", "expected": ["1", "2", "1"] },
+      {
+        "expr": "('a' || 'b' || 'c', 4 + 5, 'd' || 'e', 2 + 7)",
+        "expected": ["abc", 9, "de", 9]
+      }
+    ]
+  },
+  {
+    "name": "Union/Difference/Intersection",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      {
+        "expr": "UNION(LIST(1, 2, 3), LIST(4, 5, 6), LIST(7, 8, 9))",
+        "expected": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      },
+      {
+        "expr": "DIFFERENCE(LIST(1, 2, 3), LIST(1, 2, 4))",
+        "expected": [3, 4]
+      },
+      {
+        "expr": "INTERSECTION(LIST(1, 2, 3), LIST(1, 2, 4))",
+        "expected": [1, 2]
+      }
+    ]
+  },
+  {
+    "name": "Contains/in",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "LIST(1, 2, 3) .CONTAINS. 1", "expected": true },
+      { "expr": "LIST(1, 2, 3) .CONTAINS. 5", "expected": false },
+      { "expr": "1 .IN. LIST(1, 2, 3)", "expected": true },
+      { "expr": "5 .IN. LIST(1, 2, 3)", "expected": false },
+      { "expr": "(1, 2, 3) .CONTAINS. 1", "expected": true },
+      { "expr": "(1, 2, 3) .CONTAINS. 5", "expected": false },
+      { "expr": "1 .IN. (1, 2, 3)", "expected": true },
+      { "expr": "5 .IN. (1, 2, 3)", "expected": false }
+    ]
+  },
+  {
+    "name": "SET_PICKLIST use",
+    "context": {
+      "value": {
+        "SingleCategory": "One",
+        "MultiCategory": ["One", "Two"]
+      }
+    },
+    "checks": [
+      {
+        "expr": "IIF(SingleCategory = 'One', SET('One A', 'One B'), SET())",
+        "expected": ["One A", "One B"]
+      },
+      {
+        "expr": "IIF(SingleCategory = 'Two', SET('Two A', 'Two B'), SET())",
+        "expected": []
+      },
+      {
+        "expr": "IIF(SingleCategory = 'Three', SET('Three A', 'Three B'), SET())",
+        "expected": []
+      },
+      {
+        "expr": "UNION(IIF(SingleCategory = 'One', SET('One A', 'One B'), SET()), IIF(SingleCategory = 'Two', SET('Two A', 'Two B'), SET()), IIF(SingleCategory = 'Three', SET('Three A', 'Three B'), SET()))",
+        "expected": ["One A", "One B"]
+      },
+      {
+        "expr": "IIF(MultiCategory .CONTAINS. 'One', SET('One A', 'One B'), SET())",
+        "expected": ["One A", "One B"]
+      },
+      {
+        "expr": "IIF(MultiCategory .CONTAINS. 'Two', SET('Two A', 'Two B'), SET())",
+        "expected": ["Two A", "Two B"]
+      },
+      {
+        "expr": "IIF(MultiCategory .CONTAINS. 'Three', SET('Three A', 'Three B'), SET())",
+        "expected": []
+      },
+      {
+        "expr": "UNION(IIF(MultiCategory .CONTAINS. 'One', SET('One A', 'One B'), SET()), IIF(MultiCategory .CONTAINS. 'Two', SET('Two A', 'Two B'), SET()), IIF(MultiCategory .CONTAINS. 'Three', SET('Three A', 'Three B'), SET()))",
+        "expected": ["One A", "One B", "Two A", "Two B"]
+      }
+    ]
+  },
+  {
+    "name": "LENGTH function",
+    "context": {
+      "value": {
+        "EmptyList": [],
+        "OneItemList": ["One"],
+        "TwoItemList": ["One", "Two"]
+      }
+    },
+    "checks": [
+      { "expr": "LENGTH(EmptyList)", "expected": 0 },
+      { "expr": "LENGTH(OneItemList)", "expected": 1 },
+      { "expr": "LENGTH(TwoItemList)", "expected": 2 }
+    ]
+  }
+]

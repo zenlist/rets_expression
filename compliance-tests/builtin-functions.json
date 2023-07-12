@@ -1,0 +1,202 @@
+[
+  {
+    "name": "BOOL",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "BOOL(.TRUE.)", "expected": true },
+      { "expr": "BOOL(.FALSE.)", "expected": false },
+      { "expr": "BOOL('0')", "expected": false },
+      { "expr": "BOOL('1')", "expected": true },
+      { "expr": "BOOL('NO')", "expected": false },
+      { "expr": "BOOL('no')", "expected": false },
+      { "expr": "BOOL('YES')", "expected": true },
+      { "expr": "BOOL('yes')", "expected": true },
+      { "expr": "BOOL('faLSE')", "expected": false },
+      { "expr": "BOOL('True')", "expected": true }
+    ]
+  },
+  {
+    "name": "CHAR",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "CHAR('1')", "expected": "1" },
+      { "expr": "CHAR(1)", "expected": "1" },
+      { "expr": "CHAR(.FALSE.)", "expected": "0" },
+      { "expr": "CHAR(.TRUE.)", "expected": "1" }
+    ]
+  },
+  {
+    "name": "CHARF",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "CHARF(1.1, 1)", "expected": "1.1" },
+      { "expr": "CHARF(1, 1)", "expected": "1.0" }
+    ]
+  },
+  {
+    "name": "TIME",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "TIME('2023-04-21')", "expected": "2023-04-21" },
+      {
+        "expr": "TIME('2023-04-21T01:02:03Z')",
+        "expected": "2023-04-21T01:02:03Z"
+      }
+    ]
+  },
+  {
+    "name": "DATE",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "DATE('2023-04-21')", "expected": "2023-04-21" },
+      {
+        "expr": "DATE('2023-04-21T01:02:03Z')",
+        "expected": "2023-04-21T01:02:03Z"
+      }
+    ]
+  },
+  {
+    "name": "INT",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "INT(.TRUE.)", "expected": 1 },
+      { "expr": "INT(.FALSE.)", "expected": 0 },
+      { "expr": "INT(7)", "expected": 7 },
+      { "expr": "INT(7.32)", "expected": 7 },
+      { "expr": "INT('7')", "expected": 7 },
+      { "expr": "INT('7.32')", "expected": 7 }
+    ]
+  },
+  {
+    "name": "FLOAT",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "FLOAT(.TRUE.)", "expected": 1 },
+      { "expr": "FLOAT(.FALSE.)", "expected": 0 },
+      { "expr": "FLOAT(7)", "expected": 7 },
+      { "expr": "FLOAT(7.32)", "expected": 7.32 },
+      { "expr": "FLOAT('7')", "expected": 7.0 },
+      { "expr": "FLOAT('7.32')", "expected": 7.32 }
+    ]
+  },
+  {
+    "name": "SUBSTR",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "SUBSTR('Example', 1, 1)", "expected": "" },
+      { "expr": "SUBSTR('Example', 1, 2)", "expected": "E" },
+      { "expr": "SUBSTR('Example', 1, 4)", "expected": "Exa" },
+      { "expr": "SUBSTR('Example', 6, 8)", "expected": "le" },
+      { "expr": "SUBSTR('Example', 6, 10)", "expected": "le" },
+      { "expr": "SUBSTR('Example', 9, 10)", "expected": "" }
+    ]
+  },
+  {
+    "name": "STRLEN",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "STRLEN('')", "expected": 0 },
+      { "expr": "STRLEN('A')", "expected": 1 },
+      { "expr": "STRLEN('Example')", "expected": 7 }
+    ]
+  },
+  {
+    "name": "LOWER",
+    "context": {
+      "value": {}
+    },
+    "checks": [{ "expr": "LOWER('Example')", "expected": "example" }]
+  },
+  {
+    "name": "UPPER",
+    "context": {
+      "value": {}
+    },
+    "checks": [{ "expr": "UPPER('Example')", "expected": "EXAMPLE" }]
+  },
+  {
+    "name": "YEAR",
+    "context": {
+      "value": {
+        "Date": "2023-04-21",
+        "Timestamp": "2023-04-21T01:02:03Z"
+      }
+    },
+    "checks": [
+      { "expr": "YEAR(Date)", "expected": 2023 },
+      { "expr": "YEAR(Timestamp)", "expected": 2023 }
+    ]
+  },
+  {
+    "name": "MONTH",
+    "context": {
+      "value": {
+        "Date": "2023-04-21",
+        "Timestamp": "2023-04-21T01:02:03Z"
+      }
+    },
+    "checks": [
+      { "expr": "MONTH(Date)", "expected": 4 },
+      { "expr": "MONTH(Timestamp)", "expected": 4 }
+    ]
+  },
+  {
+    "name": "DAY",
+    "context": {
+      "value": {
+        "Date": "2023-04-21",
+        "Timestamp": "2023-04-21T01:02:03Z"
+      }
+    },
+    "checks": [
+      { "expr": "DAY(Date)", "expected": 21 },
+      { "expr": "DAY(Timestamp)", "expected": 21 }
+    ]
+  },
+  {
+    "name": "WEEKDAY",
+    "context": {
+      "value": {
+        "Date": "2023-04-21",
+        "Timestamp": "2023-04-21T01:02:03Z",
+        "PublicRemarks": "April 21, 2023, was a Friday"
+      }
+    },
+    "checks": [
+      { "expr": "WEEKDAY(Date)", "expected": 6 },
+      { "expr": "WEEKDAY(Timestamp)", "expected": 6 }
+    ]
+  },
+  {
+    "name": "TYPEOF",
+    "context": {
+      "value": {}
+    },
+    "checks": [
+      { "expr": "TYPEOF(.TRUE.)", "expected": "BOOLEAN" },
+      { "expr": "TYPEOF(1)", "expected": "INT" },
+      { "expr": "TYPEOF(1.1)", "expected": "FLOAT" },
+      { "expr": "TYPEOF('2023-04-21T01:02:03Z')", "expected": "TIME" },
+      { "expr": "TYPEOF('2023-04-21')", "expected": "TIME" },
+      { "expr": "TYPEOF('Example')", "expected": "CHAR" }
+    ]
+  }
+]
