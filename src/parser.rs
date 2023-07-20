@@ -135,6 +135,7 @@ fn prod_exp(input: &str) -> IResult<&str, Expression> {
         alt((
             map(tag("*"), |_| ExpressionOp::Mul),
             map(tag("/"), |_| ExpressionOp::Div),
+            map(tag(".MOD."), |_| ExpressionOp::Mod),
         ))(input)
     }
 
