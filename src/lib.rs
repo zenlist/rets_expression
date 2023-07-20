@@ -769,6 +769,8 @@ pub enum ExpressionOp {
     Mul,
     /// Divide one expression by another `A / B`
     Div,
+    /// Take the modulus of one number with another `A .MOD. B`
+    Mod,
     /// Concatenate two strings `A || B`
     Concat,
     /// Compare two expressions using a less-than comparison `A < B`
@@ -1009,6 +1011,11 @@ impl ExpressionOp {
                 },
             ),
             (Self::Div, _, _) => Err(Error::InvalidType),
+
+            (Self::Mod, Value::Number(ref a), Value::Number(ref b)) => {
+                number(a, b, |a, b| a % b, |a, b| a % b)
+            }
+            (Self::Mod, _, _) => Err(Error::InvalidType),
 
             (Self::Concat, Value::String(ref a), Value::String(ref b)) => string(format!("{a}{b}")),
             (Self::Concat, _, _) => Err(Error::InvalidType),

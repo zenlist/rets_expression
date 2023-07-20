@@ -148,6 +148,7 @@ impl ExpressionOp {
             ExpressionOp::Sub => "-",
             ExpressionOp::Mul => "*",
             ExpressionOp::Div => "/",
+            ExpressionOp::Mod => ".MOD.",
             ExpressionOp::Concat => "||",
             ExpressionOp::Lt => "<",
             ExpressionOp::Lte => "<=",
@@ -185,6 +186,7 @@ mod tests {
     fn a_few_round_trips_to_make_sure_we_arent_adding_too_many_parentheses() {
         let exprs = [
             "Field + 3",
+            "Field .MOD. 3",
             "Field > 1 .AND. Field < 100",
             "FieldA > 1 .AND. (FieldB < 20 .OR. FieldB = 42)",
             ".NOT. T",

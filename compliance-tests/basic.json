@@ -54,7 +54,9 @@
       {
         "expr": "Tau * Euler > 17.079 .AND. Tau * Euler < 17.081",
         "expected": true
-      }
+      },
+      { "expr": "Six .MOD. Two", "expected": 0 },
+      { "expr": "Three .MOD. Two", "expected": 1 }
     ]
   },
   {
