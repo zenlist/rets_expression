@@ -56,7 +56,12 @@
         "expected": true
       },
       { "expr": "Six .MOD. Two", "expected": 0 },
-      { "expr": "Three .MOD. Two", "expected": 1 }
+      { "expr": "Three .MOD. Two", "expected": 1 },
+      { "expr": "Three / 0", "error": true },
+      { "expr": "Two + .EMPTY.", "error": true },
+      { "expr": "Two - .EMPTY.", "error": true },
+      { "expr": "Two * .EMPTY.", "error": true },
+      { "expr": "Two / .EMPTY.", "error": true }
     ]
   },
   {
