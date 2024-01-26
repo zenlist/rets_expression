@@ -12,7 +12,7 @@ fn main() {
         .with_function("NOW", Box::new(Now))
         .with_function("TODAY", Box::new(Today));
 
-    let iter = std::fs::read_dir("compliance-tests").unwrap();
+    let iter = std::fs::read_dir("compliance-tests/tests").unwrap();
     for result in iter {
         let file = result.unwrap();
         let filename = file
