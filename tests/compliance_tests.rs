@@ -12,7 +12,7 @@ fn main() {
         .with_function("NOW", Box::new(Now))
         .with_function("TODAY", Box::new(Today));
 
-    let iter = std::fs::read_dir("compliance-tests").unwrap();
+    let iter = std::fs::read_dir("compliance-tests/tests").unwrap();
     for result in iter {
         let file = result.unwrap();
         let filename = file
@@ -37,12 +37,14 @@ fn main() {
                 let expression = match check.expression.parse::<Expression>() {
                     Ok(expression) => expression,
                     Err(err) => {
-                        println!("NOK {name}");
-                        println!(
-                            "  expected: {}",
-                            serde_json::to_string(&check.expected).unwrap()
-                        );
-                        println!("  error: {err}");
+                        if let Some(expected) = check.result.as_expected() {
+                            println!("NOK {name}");
+                            println!("  expected: {}", serde_json::to_string(expected).unwrap());
+                            println!("  error: {err}");
+                        } else {
+                            tests_passed += 1;
+                            println!("OK {name}");
+                        }
                         continue;
                     }
                 };
@@ -55,25 +57,31 @@ fn main() {
                 let actual = match expression.apply(context) {
                     Ok(result) => result,
                     Err(err) => {
-                        println!("NOK {name}");
-                        println!(
-                            "  expected: {}",
-                            serde_json::to_string(&check.expected).unwrap()
-                        );
-                        println!("  error: {err:?}");
+                        if let Some(expected) = check.result.as_expected() {
+                            println!("NOK {name}");
+                            println!("  expected: {}", serde_json::to_string(expected).unwrap());
+                            println!("  error: {err:?}");
+                        } else {
+                            tests_passed += 1;
+                            println!("OK {name}");
+                        }
                         continue;
                     }
                 };
-                if actual.as_ref() != &check.expected {
-                    println!("NOK {name}");
-                    println!(
-                        "  expected: {}",
-                        serde_json::to_string(&check.expected).unwrap()
-                    );
-                    println!("  actual: {}", serde_json::to_string(&actual).unwrap());
+
+                if let Some(expected) = check.result.as_expected() {
+                    if actual.as_ref() != expected {
+                        println!("NOK {name}");
+                        println!("  expected: {}", serde_json::to_string(expected).unwrap());
+                        println!("  actual: {}", serde_json::to_string(&actual).unwrap());
+                    } else {
+                        tests_passed += 1;
+                        println!("OK {name}");
+                    }
                 } else {
-                    tests_passed += 1;
-                    println!("OK {name}");
+                    println!("NOK {name}");
+                    println!("  expected an error");
+                    println!("  actual: {}", serde_json::to_string(&actual).unwrap());
                 }
             }
         }
@@ -162,5 +170,33 @@ struct Context {
 struct Check {
     #[serde(rename = "expr")]
     expression: String,
+    #[serde(flatten)]
+    result: CheckResult,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(untagged)]
+enum CheckResult {
+    Expected(CheckResultExpected),
+    Error(CheckResultError),
+}
+
+impl CheckResult {
+    fn as_expected(&self) -> Option<&serde_json::Value> {
+        match self {
+            CheckResult::Expected(e) => Some(&e.expected),
+            CheckResult::Error(_) => None,
+        }
+    }
+}
+
+#[derive(serde::Deserialize)]
+struct CheckResultExpected {
     expected: serde_json::Value,
+}
+
+#[derive(serde::Deserialize)]
+struct CheckResultError {
+    #[allow(dead_code)]
+    error: bool,
 }

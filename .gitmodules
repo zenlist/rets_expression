@@ -1,0 +1,3 @@
+[submodule "compliance-tests"]
+	path = compliance-tests
+	url = https://github.com/zenlist/reso-rcp19-compliance-tests.git
