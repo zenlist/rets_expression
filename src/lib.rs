@@ -750,10 +750,9 @@ impl FromStr for Expression {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match parser::top(s) {
-            Ok((rest, expression)) if rest.is_empty() => Ok(expression),
-            Ok((_rest, _expression)) => Err(String::from("Incomplete parse")),
-            Err(err) => Err(err.to_string()),
+        match parser::parse::parse(s) {
+            Ok(expr) => Ok(expr),
+            Err(s) => Err(s),
         }
     }
 }
