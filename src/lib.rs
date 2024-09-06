@@ -1208,6 +1208,24 @@ pub enum Error {
     Function(function::FunctionError),
 }
 
+impl core::fmt::Display for Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Error::LastUsedWithoutPreviousValue => {
+                f.write_str("`LAST FieldName` was used but no previous value was provided")
+            }
+            Error::InvalidType => f.write_str("Invalid type"),
+            Error::NotImplemented => f.write_str("Not implemented"),
+            Error::InvalidNumber => f.write_str("Invalid number"),
+            Error::DivideByZero => f.write_str("Divide by zero"),
+            Error::UnknownFunction(name) => write!(f, "Unknown function: {name}"),
+            Error::Function(err) => write!(f, "Error while executing function: {err}"),
+        }
+    }
+}
+
+impl core::error::Error for Error {}
+
 /// Visit nodes in the Expression
 ///
 /// Use this to transform expressions or to inspect the structure of expressions without recursively

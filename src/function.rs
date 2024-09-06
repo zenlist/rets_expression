@@ -183,6 +183,20 @@ pub enum FunctionError {
     Custom(Cow<'static, str>),
 }
 
+impl core::fmt::Display for FunctionError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            FunctionError::InvalidType => f.write_str("Invalid type"),
+            FunctionError::UnexpectedNumberOfArguments => {
+                f.write_str("Unexpected number of arguments")
+            }
+            FunctionError::Custom(err) => write!(f, "{err}"),
+        }
+    }
+}
+
+impl core::error::Error for FunctionError {}
+
 /// Default implementation for the standard `LIST` function
 pub struct ListFunction;
 
