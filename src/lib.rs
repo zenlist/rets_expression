@@ -922,7 +922,7 @@ impl ExpressionOp {
                 number(a, b, |a, b| a == b, |a, b| a == b)
             }
             (Self::Eq, Value::String(ref a), Value::String(ref b)) => boolean(a == b),
-            (Self::Eq, _, _) => Err(Error::InvalidType),
+            (Self::Eq, _, _) => boolean(false),
 
             (Self::Ne, Value::Null, Value::Null) => boolean(false),
             (Self::Ne, Value::Null, _) => boolean(true),
@@ -932,7 +932,7 @@ impl ExpressionOp {
                 number(a, b, |a, b| a != b, |a, b| a != b)
             }
             (Self::Ne, Value::String(ref a), Value::String(ref b)) => boolean(a != b),
-            (Self::Ne, _, _) => Err(Error::InvalidType),
+            (Self::Ne, _, _) => boolean(true),
 
             (Self::Lt, Value::Null, Value::Null) => boolean(false),
             (Self::Lt, Value::Null, _) => boolean(true),
