@@ -227,7 +227,7 @@ pub fn token<'a>(i: &mut Located<&'a str>) -> PResult<Token<'a>> {
 }
 
 fn whitespace<'a>(i: &mut Located<&'a str>) -> PResult<Token<'a>> {
-    take_while(1.., AsChar::is_space)
+    take_while(1.., |char: char| char.is_whitespace())
         .map(Token::Whitespace)
         .parse_next(i)
 }
