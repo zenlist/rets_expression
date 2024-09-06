@@ -1,6 +1,6 @@
 use serde_json::json;
 use winnow::{
-    combinator::{alt, delimited, fail, preceded, separated, separated_foldl1},
+    combinator::{alt, cut_err, delimited, fail, preceded, separated, separated_foldl1},
     prelude::*,
     token::{any, one_of},
     Located,
@@ -61,56 +61,59 @@ fn not_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
 }
 
 fn eq_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
-    fn first_case(input: &mut &[Token<'_>]) -> PResult<Expression> {
-        (
-            cmp_exp,
-            alt((
-                BinaryOperator::NotEqual.value(ExpressionOp::Ne),
-                BinaryOperator::Equal.value(ExpressionOp::Eq),
-            )),
-            cmp_exp,
-        )
-            .map(|(l, op, r)| Expression::from(OpNode::new(l, op, r)))
-            .parse_next(input)
-    }
+    let l = cmp_exp.parse_next(input)?;
 
-    alt((first_case, cmp_exp)).parse_next(input)
+    if let Ok((op, r)) = (
+        alt((
+            BinaryOperator::NotEqual.value(ExpressionOp::Ne),
+            BinaryOperator::Equal.value(ExpressionOp::Eq),
+        )),
+        cmp_exp,
+    )
+        .parse_next(input)
+    {
+        Ok(Expression::from(OpNode::new(l, op, r)))
+    } else {
+        Ok(l)
+    }
 }
 
 fn cmp_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
-    fn first_case(input: &mut &[Token<'_>]) -> PResult<Expression> {
-        (
-            cnt_exp,
-            alt((
-                BinaryOperator::LessThanEqual.value(ExpressionOp::Lte),
-                BinaryOperator::LessThan.value(ExpressionOp::Lt),
-                BinaryOperator::GreaterThanEqual.value(ExpressionOp::Gte),
-                BinaryOperator::GreaterThan.value(ExpressionOp::Gt),
-            )),
-            cnt_exp,
-        )
-            .map(|(l, op, r)| Expression::from(OpNode::new(l, op, r)))
-            .parse_next(input)
-    }
+    let l = cnt_exp(input)?;
 
-    alt((first_case, cnt_exp)).parse_next(input)
+    if let Ok((op, r)) = (
+        alt((
+            BinaryOperator::LessThanEqual.value(ExpressionOp::Lte),
+            BinaryOperator::LessThan.value(ExpressionOp::Lt),
+            BinaryOperator::GreaterThanEqual.value(ExpressionOp::Gte),
+            BinaryOperator::GreaterThan.value(ExpressionOp::Gt),
+        )),
+        cnt_exp,
+    )
+        .parse_next(input)
+    {
+        Ok(Expression::from(OpNode::new(l, op, r)))
+    } else {
+        Ok(l)
+    }
 }
 
 fn cnt_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
-    fn first_case(input: &mut &[Token<'_>]) -> PResult<Expression> {
-        (
-            sum_exp,
-            alt((
-                DottedKeyword::Contains.value(ExpressionOp::Contains),
-                DottedKeyword::In.value(ExpressionOp::In),
-            )),
-            sum_exp,
-        )
-            .map(|(l, op, r)| Expression::from(OpNode::new(l, op, r)))
-            .parse_next(input)
-    }
+    let l = sum_exp(input)?;
 
-    alt((first_case, sum_exp)).parse_next(input)
+    if let Ok((op, r)) = (
+        alt((
+            DottedKeyword::Contains.value(ExpressionOp::Contains),
+            DottedKeyword::In.value(ExpressionOp::In),
+        )),
+        sum_exp,
+    )
+        .parse_next(input)
+    {
+        Ok(Expression::from(OpNode::new(l, op, r)))
+    } else {
+        Ok(l)
+    }
 }
 
 fn sum_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
@@ -178,27 +181,13 @@ fn list_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
 
 // TODO: rename this to iif_expression?
 fn func_exp(input: &mut &[Token<'_>]) -> PResult<Expression> {
-    (
-        BareKeyword::Iif,
-        Atom::LeftParen,
-        exp,
-        Atom::Comma,
-        exp,
-        Atom::Comma,
-        exp,
-        Atom::RightParen,
-    )
+    (BareKeyword::Iif, Atom::LeftParen).parse_next(input)?;
+
+    cut_err((exp, Atom::Comma, exp, Atom::Comma, exp, Atom::RightParen))
         .map(
-            |(
-                _iif,
-                _lparen,
-                test_exp,
-                _first_comma,
-                true_exp,
-                _second_comma,
-                false_exp,
-                _rparen,
-            )| Expression::from(IifNode::new(test_exp, true_exp, false_exp)),
+            |(test_exp, _first_comma, true_exp, _second_comma, false_exp, _rparen)| {
+                Expression::from(IifNode::new(test_exp, true_exp, false_exp))
+            },
         )
         .parse_next(input)
 }
@@ -309,5 +298,70 @@ fn retsname<'a>(input: &mut &[Token<'a>]) -> PResult<Identifier<'a>> {
     match token {
         Token::Identifier(id) => Ok(id),
         _ => unreachable!(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::Expression;
+    use std::time::{Duration, Instant};
+
+    #[test]
+    fn test_pathological_iif() {
+        // Previously, parsing 6 nested IIFs would take ~60s. Test that we've fixed that, and
+        // parsing 10 nested IIFs takes less than a second. (In fact, as written now and on my
+        // hardware, it takes less than a millisecond.)
+
+        let input = r#"
+            IIF(
+                IIF(
+                    IIF(
+                        IIF(
+                            IIF(
+                                IIF(
+                                    IIF(
+                                        IIF(
+                                            IIF(
+                                                IIF(
+                                                    IIF(
+                                                        .TRUE.,
+                                                        .TRUE.,
+                                                        .FALSE.
+                                                    ),
+                                                    .TRUE.,
+                                                    .FALSE.
+                                                ),
+                                                .TRUE.,
+                                                .FALSE.
+                                            ),
+                                            .TRUE.,
+                                            .FALSE.
+                                        ),
+                                        .TRUE.,
+                                        .FALSE.
+                                    ),
+                                    .TRUE.,
+                                    .FALSE.
+                                ),
+                                .TRUE.,
+                                .FALSE.
+                            ),
+                            .TRUE.,
+                            .FALSE.
+                        ),
+                        .TRUE.,
+                        .FALSE.
+                    ),
+                    .TRUE.,
+                    .FALSE.
+                ),
+                .TRUE.,
+                .FALSE.
+            )
+        "#;
+
+        let start = Instant::now();
+        let _expression = input.parse::<Expression>().expect("successful parse");
+        assert!(start.elapsed() < Duration::from_millis(500));
     }
 }
