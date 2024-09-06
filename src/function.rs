@@ -179,6 +179,8 @@ pub enum FunctionError {
     InvalidType,
     /// The function did not receive the number of arguments it expected
     UnexpectedNumberOfArguments,
+    /// The function threw its own custom error
+    Custom(Cow<'static, str>),
 }
 
 /// Default implementation for the standard `LIST` function
