@@ -16,7 +16,7 @@ chrono = { version = "0.4.26", default-features = false, features = ["alloc"] }
 miette = "7.1.0"
 regex-lite = { version = "0.1.0", optional = true }
 serde_json = { version = "1.0.100", default-features = false, features = ["alloc"] }
-winnow = "0.6.18"
+winnow = { version = "0.6.18", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]
 chrono-tz = { version = "0.8.3", features = ["serde"] }

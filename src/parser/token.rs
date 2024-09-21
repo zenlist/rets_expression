@@ -1,3 +1,6 @@
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::ops;
 use winnow::ascii::{alpha1, digit1, escaped_transform, take_escaped};
 use winnow::combinator::{alt, opt, repeat};
 use winnow::error::{InputError, ParserError};
@@ -24,7 +27,7 @@ pub enum Token<'a> {
     Float(Float<'a>),
 }
 
-impl<'a> std::fmt::Display for Token<'a> {
+impl<'a> core::fmt::Display for Token<'a> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:?}", self)
     }
@@ -35,15 +38,15 @@ struct Location {
     start: usize,
     end: usize,
 }
-impl From<std::ops::Range<usize>> for Location {
-    fn from(value: std::ops::Range<usize>) -> Self {
+impl From<ops::Range<usize>> for Location {
+    fn from(value: ops::Range<usize>) -> Self {
         Self {
             start: value.start,
             end: value.end,
         }
     }
 }
-impl From<Location> for std::ops::Range<usize> {
+impl From<Location> for ops::Range<usize> {
     fn from(value: Location) -> Self {
         value.start..value.end
     }
