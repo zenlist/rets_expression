@@ -2,7 +2,7 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use core::ops;
 use winnow::ascii::{alpha1, digit1, escaped_transform, take_escaped};
-use winnow::combinator::{alt, opt, repeat};
+use winnow::combinator::{alt, eof, opt, repeat};
 use winnow::error::{InputError, ParserError};
 use winnow::stream::AsChar;
 use winnow::token::{any, none_of, one_of, take_until, take_while};
@@ -258,7 +258,7 @@ impl<'a> Comment<'a> {
 }
 
 fn single_line_comment<'a>(i: &mut Located<&'a str>) -> PResult<Comment<'a>> {
-    ("//", take_until(0.., "\n"), "\n")
+    ("//", take_while(0.., |x| x != '\n'), alt(("\n", eof)))
         .take()
         .map(Comment)
         .parse_next(i)
