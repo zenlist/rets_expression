@@ -1,5 +1,5 @@
 use alloc::format;
-use alloc::string::{String, ToString};
+use alloc::string::String;
 use alloc::vec::Vec;
 use serde_json::json;
 use winnow::{
@@ -19,7 +19,8 @@ use crate::{
 pub(crate) fn parse(input: &str) -> Result<Expression, String> {
     let tokens = lex
         .parse(Located::new(input))
-        .map_err(|err| err.to_string())?;
+        .map_err(|err| format!("Error at {}", err.offset()))?;
+
     let mut tokens = tokens
         .into_iter()
         .filter(|token| !matches!(token, Token::Whitespace(_) | Token::Comment(_)))
